@@ -1,0 +1,8 @@
+{
+    "login"  : "Login",
+    "username" : "Username or Email",
+    "password" : "Password",
+    "forgotpw" : "Forgot Password?",
+    "loginwGoogle" : "Connect with Google",
+    "loginwmicrosoft" : "Connect with Office 365"
+}

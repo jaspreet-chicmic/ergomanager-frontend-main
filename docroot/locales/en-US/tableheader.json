@@ -1,0 +1,13 @@
+{
+    "title": "Title",
+    "location": "Location",
+    "category": "Category",
+    "assign_to": "Assigned to",
+    "status": "Status",
+    "priority": "Priority",
+    "dateadded": "Date Added",
+    "duedate": "Due Date",
+    "type": "Type",
+    "expiration": "Expiration Date",
+    "date": "Date"
+}

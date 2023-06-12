@@ -1,0 +1,58 @@
+# This is a GitLab CI configuration to build the project as a docker image
+# Kaniko is used for docker image build and push steps and various variables are passed as build_args
+# Author: Vasilis Giannoulis <vgiannoul@2square.gr>
+
+stages:
+  - build
+  - push
+
+#default:
+ # before_script:
+    # docker login asks for the password to be passed through stdin for security
+    # we use $CI_JOB_TOKEN here which is a special token provided by GitLab
+    # - echo -n $CI_JOB_TOKEN | docker login -u gitlab-ci-token --password-stdin $CI_REGISTRY
+    # - docker login -u "${DOCKER_USERNAME}" --password "${DOCKER_PASSWORD}"
+
+build_images:
+  stage: build
+  image:
+    name: gcr.io/kaniko-project/executor:debug
+    entrypoint: [""]
+  only:
+    changes:
+      - "docroot/**/*"
+      - "images/**/**/*"
+      - ".gitlab-ci.yml"
+    refs:
+    # Only "master" should be tagged "latest"
+      - master
+      - main
+  script: 
+    - export TIMESTAMP=$(date +%s)
+    - cp -f $STAGE_ENV docroot/.env
+    - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}}}" > /kaniko/.docker/config.json
+    - export $(grep -v '^#' .env | xargs -0 ) && IMAGE_TAG=$CI_COMMIT_SHORT_SHA NODE_BASE_IMAGE_TAG=$NODE_TAG NODE_IMAGE=registry.gitlab.com/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/node:${CI_COMMIT_SHORT_SHA}-${TIMESTAMP} /kaniko/executor --context $CI_PROJECT_DIR --dockerfile $CI_PROJECT_DIR/images/node/Dockerfile --build-arg=NODE_BASE_IMAGE_TAG --destination registry.gitlab.com/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/node:$CI_COMMIT_SHORT_SHA-${TIMESTAMP} --destination registry.gitlab.com/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/node:latest
+#  rules:
+#    - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "master" || $CI_COMMIT_BRANCH == "master" || $CI_COMMIT_SHORT_SHA =~ /^\d/'
+
+
+# Finally, the goal here is to Docker tag any Git tag
+# GitLab will start a new pipeline everytime a Git tag is created, which is pretty awesome
+push_tag:
+  stage: push
+  image:
+    name: gcr.io/kaniko-project/executor:debug
+    entrypoint: [""]
+  only:
+    changes:
+      - "docroot/**/*"
+      - "images/**/**/*"
+    refs:
+    # We want this job to be run on tags only.
+      - tags
+  script:
+ # Because we have no guarantee that this job will be picked up by the same runner 
+    # that built the image in the previous step, we pull it again locally
+    - cp -f $PROD_ENV docroot/.env
+    - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}}}" > /kaniko/.docker/config.json
+    - export $(grep -v '^#' .env | xargs -0 ) && IMAGE_TAG=$CI_COMMIT_SHORT_SHA NODE_BASE_IMAGE_TAG=$NODE_TAG NODE_IMAGE=registry.gitlab.com/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/node:${CI_COMMIT_SHORT_SHA} /kaniko/executor --context $CI_PROJECT_DIR --dockerfile $CI_PROJECT_DIR/images/node/Dockerfile --build-arg=NODE_BASE_IMAGE_TAG --destination registry.gitlab.com/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/node:$CI_COMMIT_REF_NAME 

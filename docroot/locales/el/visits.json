@@ -1,0 +1,23 @@
+{
+    "visitslist" : "Λίστα επισκέψεων",
+    "visitscalender" : "Επισκεφτείτε το Ημερολόγιο",
+    "addnewaudit" : "Προσθήκη νέου ελέγχου",
+    "filterbyvisitstatus": "Φιλτράρισμα κατά κατάσταση επίσκεψης",
+    "filterbyvisittype": "Φιλτράρισμα κατά τύπο επίσκεψης",
+    "date": "Ημερομηνία",
+    "location": "Τοποθεσία",
+    "type" : "Τύπος",
+    "status": "Κατάσταση",
+    "generatepdfreport": "Δημιουργία αναφοράς PDF",
+    "information": "Πληροφορίες",
+    "audittype": "Τύπος ελέγχου",
+    "doneon": "Έγινε Ενεργοποίηση",
+    "submittedby": "Που υποβάλλονται από",
+    "issues_a": "Ζητήματα (Προστέθηκε)",
+    "issues_aa": "Ζητήματα (Αντιμετωπιστεί)",
+    "bestpractices": "Βέλτιστες πρακτικές",
+    "additionalinfo": "Πρόσθετες πληροφορίες",
+    "customform": "Προσαρμοσμένη φόρμα",
+    "certification": "Πιστοποίηση",
+    "issuesadded": "Προστέθηκαν θέματα"  
+}

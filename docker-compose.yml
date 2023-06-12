@@ -1,0 +1,107 @@
+version: "3.4"
+
+services:
+  nginx:
+    image: wodby/nginx:$NGINX_TAG
+    networks:
+      - default
+      - traefik
+    container_name: "${PROJECT_NAME}_nginx"
+    environment:
+      NGINX_STATIC_OPEN_FILE_CACHE: "off"
+      NGINX_ERROR_LOG_LEVEL: debug
+      NGINX_SERVER_ROOT: /var/www/html/docroot/web
+    volumes:
+      - codebase:/var/www/html # mutagen-sync
+      - files:/mnt/files/ # Docker volume sync
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.${PROJECT_NAME}_nginx.entrypoints=https"
+      # - "traefik.http.routers.${PROJECT_NAME}_nginx.rule=Host(`${PROJECT_BASE_URL}`)"
+      ## if varnish is enabled disable above label and enable the following
+      - "traefik.http.routers.${PROJECT_NAME}_nginx.rule=Host(`nginx-${PROJECT_BASE_URL}`)"
+      - "traefik.http.routers.${PROJECT_NAME}_nginx.tls=true"
+      - "traefik.http.services.${PROJECT_NAME}_nginx.loadbalancer.server.port=80"
+      - "traefik.http.routers.${PROJECT_NAME}_nginx.service=${PROJECT_NAME}_nginx@docker"
+      - "traefik.docker.network=traefik_proxy"
+
+
+
+  mailhog:
+    image: mailhog/mailhog
+    networks:
+      - default
+      - traefik
+    container_name: "${PROJECT_NAME}_mailhog"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.${PROJECT_NAME}_mailhog.entrypoints=https"
+      - "traefik.http.routers.${PROJECT_NAME}_mailhog.rule=Host(`${PROJECT_BASE_URL}`) && PathPrefix(`/mailhog`)"
+      - "traefik.http.middlewares.${PROJECT_NAME}_mailhog.stripprefix.prefixes=/mailhog"
+      #### use these middlewares (rules like our-auth,our-retry,our-ratelimit are defined within traefik's labels)
+      - "traefik.http.routers.${PROJECT_NAME}_mailhog.middlewares=our-slash@docker"
+      - "traefik.http.routers.${PROJECT_NAME}_mailhog.tls=true"
+      - "traefik.http.services.${PROJECT_NAME}_mailhog.loadbalancer.server.port=8025"
+      - "traefik.http.routers.${PROJECT_NAME}_mailhog.service=${PROJECT_NAME}_mailhog@docker"
+      - "traefik.docker.network=traefik_proxy"
+
+
+  node:
+    image: wodby/node:$NODE_TAG
+    networks:
+      - default
+      - traefik
+    container_name: "${PROJECT_NAME}_node"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.${PROJECT_NAME}_node.entrypoints=https"
+      - "traefik.http.routers.${PROJECT_NAME}_node.rule=Host(`${PROJECT_BASE_URL}`)"
+      ## if nginx is enabled disable above label and enable the following
+      # - "traefik.http.routers.${PROJECT_NAME}_node.rule=Host(`node-${PROJECT_BASE_URL}`)"
+      - "traefik.http.routers.${PROJECT_NAME}_node.tls=true"
+      - "traefik.http.services.${PROJECT_NAME}_node.loadbalancer.server.port=3000"
+      - "traefik.http.routers.${PROJECT_NAME}_node.service=${PROJECT_NAME}_node@docker"
+      - "traefik.docker.network=traefik_proxy"
+    expose:
+      - "3000"
+    volumes:
+      - codebase:/usr/src/app # mutagen-sync
+    command: sh -c 'tail -f /dev/null'
+
+# Set up Mutagen synchronization and forwarding.
+x-mutagen:
+  sync:
+    defaults:
+      ignore:
+        vcs: true
+    codebase:
+      alpha: "./docroot/"
+      beta: "volume://codebase/"
+      mode: "two-way-resolved"
+      configurationBeta:
+        permissions:
+          defaultFileMode: 0644
+          defaultDirectoryMode: 0755
+          defaultOwner: "id:1000"
+          defaultGroup: "id:1000"
+      ignore:
+        paths:
+          - .DS_Store
+          - .history
+          - .idea
+          - vendor/*
+          - node_modules/*
+
+volumes:
+## Docker-sync
+  codebase:
+    # external: true
+    name: ${PROJECT_NAME}-codebase
+  files:
+    name: ${PROJECT_NAME}-files
+
+networks:
+  traefik:
+    name: traefik_proxy
+    external: true
+      

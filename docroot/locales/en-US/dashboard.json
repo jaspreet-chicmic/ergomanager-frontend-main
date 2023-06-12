@@ -1,0 +1,18 @@
+{
+    "dashboard": "Dashboard",
+    "setdate": "Set Date",
+    "allissues": "All Issues",
+    "openissuespriority": "Open Issues Priority",
+    "expiringdocuments": "Expiring Documents",
+    "upcomingvisits": "Upcoming Visits",
+    "news": "News",
+    "contact": "Contact",
+    "total": "Total",
+    "documenttype": "Document Type",
+    "title": "Title",
+    "type": "Type",
+    "expiration": "Expiration",
+    "date": "Date",
+    "auditor": "Auditor",
+    "location": "Location"
+}

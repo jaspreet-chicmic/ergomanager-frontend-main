@@ -1,0 +1,18 @@
+{
+    "dashboard": "Ταμπλό",
+    "setdate": "Ορισμός ημερομηνίας",
+    "allissues": "Όλα τα Θέματα",
+    "openissuespriority": "Προτεραιότητα ανοιχτών ζητημάτων",
+    "expiringdocuments": "Έγγραφα που λήγουν",
+    "upcomingvisits": "Προσεχείς Επισκέψεις",
+    "news": "Νέα",
+    "contact": "Επικοινωνία",
+    "total": "Σύνολο",
+    "documenttype": "Είδος αρχείου",
+    "title": "Τίτλος",
+    "type": "Τύπος",
+    "expiration": "Λήξη",
+    "date": "Ημερομηνία",
+    "auditor": "Ελεγκτής",
+    "location": "Τοποθεσία"
+}

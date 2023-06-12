@@ -1,0 +1,30 @@
+{
+    "locales": [
+        "en-US",
+        "el"
+    ],
+    "defaultLocale": "en-US",
+    "pages": {
+        "/": [
+            "login"
+        ],
+        "/login": [
+            "login"
+        ],
+        "/forget-password": [
+            "forget-password"
+        ],
+        "*": [
+            "search",
+            "sidebar",
+            "allpagelist",
+            "tableheader",
+            "filters",
+            "model",
+            "propstitle",
+            "pageid",
+            "dashboard",
+            "visits"
+        ]
+    }
+}

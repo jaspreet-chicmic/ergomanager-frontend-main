@@ -1,0 +1,9 @@
+{
+    "category":"Filter by Category",
+    "assignee":"Filter by Assignee",
+    "status":"Filter by Status",
+    "priority":"Filter by Priority",
+    "type":"Filter by Type",
+    "date":"Filter by Date",
+    "clear":"Clear"
+}
